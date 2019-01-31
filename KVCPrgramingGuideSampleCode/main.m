@@ -210,6 +210,15 @@ int main(int argc, const char * argv[]) {
         NSSet *secondSets = [[NSSet alloc] initWithArray:moreTransactions];
         NSSet *distincUnionOfSets = [NSSet  setWithObjects:firstSets, secondSets,firstSets, nil];
         NSLog(@"%@", [distincUnionOfSets valueForKeyPath:@"@distinctUnionOfSets.payee"]);
+        
+        
+        // example using left key path
+        BankAccount *bankAccount = [BankAccount new];
+        bankAccount.transactions = @[aTransaction, bTransaction];
+        
+        NSLog(@"%@", [bankAccount valueForKeyPath:@"transactions.@count"]);
+        NSLog(@"%@", [bankAccount valueForKeyPath:@"transactions.@avg.amount"]);
+        NSLog(@"%@", [bankAccount valueForKeyPath:@"transactions.@distinctUnionOfObjects.payee"]);
 
     }
     return 0;
