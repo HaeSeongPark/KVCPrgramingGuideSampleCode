@@ -123,6 +123,11 @@ int main(int argc, const char * argv[]) {
         NSNumber *numberOfTransactions = [transactions valueForKeyPath:@"@count"];
         NSLog(@"%@", numberOfTransactions);
         
+        /*
+         
+         It is important to note that these comparisons are made by invoking the compare: method on the objects, so if you ever want to make your own class compatible with these operators, you must implement this method.
+
+         */
         NSDate *latestDate = [transactions valueForKeyPath:@"@max.date"];
         NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitMonth | NSCalendarUnitYear fromDate:latestDate];
         NSLog(@"%ld %ld %ld", (long)[components year], (long)[components month], (long)[components day]);
@@ -199,6 +204,20 @@ int main(int argc, const char * argv[]) {
         
         NSArray* arrayOfArrays = @[transactions, moreTransactions];
         
+//        NSArray<NSArray<Transaction*>*> *arrayOfArraysT =
+//        @[
+//          @[ aTransaction,
+//             bTransaction,
+//             //...
+//             ],
+//
+//          @[ aMoreTransaction,
+//             bMoreTransaction,
+//             //...
+//             ]
+//        ];
+        
+        
         NSLog(@"/// Nesting Operators");
         NSArray *collectedDistinctPayees = [arrayOfArrays valueForKeyPath:@"@distinctUnionOfArrays.payee"];
         NSLog(@"%@", collectedDistinctPayees);
@@ -219,6 +238,100 @@ int main(int argc, const char * argv[]) {
         NSLog(@"%@", [bankAccount valueForKeyPath:@"transactions.@count"]);
         NSLog(@"%@", [bankAccount valueForKeyPath:@"transactions.@avg.amount"]);
         NSLog(@"%@", [bankAccount valueForKeyPath:@"transactions.@distinctUnionOfObjects.payee"]);
+        
+        NSLog(@"%@", [bankAccount attributeKeys]);
+        NSClassDescription * desc = (NSClassDescription *) [NSClassDescription classDescriptionForClass: [BankAccount class]];
+        NSLog (@"%@", [[desc toManyRelationshipKeys] description]);
+        
+        NSLog(@"%@",[bankAccount inverseForRelationshipKey:@"currentBalance"]);
+        
+        NSLog(@"Aggregated Assault %@", [bankAccount valueForKeyPath:@"transactions.amount"]);
+        
+        
+        NSArray *keys = [NSArray arrayWithObjects:@"payee", @"amount", @"date", nil];
+        NSDictionary *gTransactionValue = [gTransaction dictionaryWithValuesForKeys:keys];
+        NSLog(@"gTransaction values : %@", gTransactionValue);
+        
+        NSDictionary *newValues = [NSDictionary dictionaryWithObjectsAndKeys:
+                                   @"new General Cable", @"payee",
+                                   @(123),@"amount",
+                                  nil];
+        
+        [gTransaction setValuesForKeysWithDictionary:newValues];
+        gTransactionValue = [gTransaction dictionaryWithValuesForKeys:keys];
+        NSLog(@"gTransaction values : %@", gTransactionValue);
+        
+        [bankAccount setValue:nil forKey:@"number"];
+        NSLog(@"%d", bankAccount.number);
+        
+        [bankAccount setValue:@"test1" forUndefinedKey:@"test1"];
+        [bankAccount setValue:[NSNull null] forUndefinedKey:@"test null object"];
+        [bankAccount setValue:nil forUndefinedKey:@"test nil"];
+        
+        NSLog(@"test1 : %@, test null object : %@, test nil : %@",
+              [bankAccount valueForKey:@"test1"],
+              [bankAccount valueForKey:@"test null object"], // <null> is an [NSNUll null] object
+              [bankAccount valueForKey:@"test nil"]); // (null) nil is real live value that we got back because "test nil" was not in dic
+        
+        NSLog(@"%@", bankAccount.stuff);
+        
+        
+        // Accessing Collection Properties
+        NSLog(@"Accessing Collection Properties");
+        NSMutableArray *newTransactions = [bankAccount mutableArrayValueForKey:@"transactions"]; // NSKeyValueSlowMutableArray
+        NSLog(@"%@", newTransactions);
+        NSLog(@"class %@", NSStringFromClass([newTransactions class]));
+        [newTransactions addObject:cTransaction];
+        NSLog(@"%@", newTransactions);
+        NSLog(@"%@", [bankAccount mutableArrayValueForKey:@"transactions"]);
+        
+        NSLog(@"%lu",(unsigned long)[bankAccount countOfTransactions]);
+        NSLog(@"%@", [bankAccount objectInTransactionsAtIndex:0]);
+        
+        bankAccount.test = [NSMutableArray new];
+        [bankAccount insertObject:@"1" inTestAtIndex:0];
+        NSMutableArray* test = [bankAccount mutableArrayValueForKey:@"test"];
+        NSLog(@"test : %@", test);
+        [bankAccount replaceObjectInTestAtIndex:0 withObject:@(2)];
+        NSLog(@"test : %@", test);
+        [bankAccount removeObjectFromTestAtIndex:0];
+        NSLog(@"test : %@", test);
+        
+        // Key-Value Coding Fundamentals - Validation Properties
+        NSLog(@"Key-Value Coding Fundamentals - Validation Properties");
+        NSLog(@"%@", bankAccount.currentBalance);
+        NSNumber *num = [NSNumber numberWithInt:100];
+        NSError *error;
+        if ( [bankAccount validateValue:&num forKey:@"currentBalance" error:&error]) {
+            [bankAccount setValue:num forKey:@"currentBalance"];
+        } else {
+            NSLog(@"%@", error);
+        }
+        NSLog(@"%@", bankAccount.currentBalance);
+
+//
+        
+        // Notice that test nil key is not in stuff dic
+        /*
+         "test null object" = "<null>";
+         test1 = test1;
+         */
+        
+        
+//        NSMutableArray<NSNumber *> *arrayz = [@[] mutableCopy];
+//        [arrayz addObject:@1];
+//        [arrayz addObject:@2];
+//        [arrayz addObject:@"1"];
+////        NSString *sdf = arrayz[0];
+//
+//        NSMutableDictionary<NSString *, NSNumber *> *someDictionary = [[NSMutableDictionary alloc] init];
+//        [someDictionary setObject:@2 forKey:@"two"];
+//        [someDictionary setObject:@1 forKey:@"one"];
+//
+//        NSMutableArray<NSNumber *> *array = [@[] mutableCopy];
+//        [array addObject:@1];
+//        [array addObject:@2];
+//        [array addObject:@"5"];
 
     }
     return 0;

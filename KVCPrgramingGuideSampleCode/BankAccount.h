@@ -17,6 +17,17 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSNumber* currentBalance; // An attribute
 @property (nonatomic) Person* owner; // A to - one relation
 @property (nonatomic) NSArray<Transaction*>* transactions; // A to-many relation
+@property (nonatomic) int number;
+@property (nonatomic) NSMutableDictionary *stuff;
+@property (nonatomic) NSMutableArray<NSString*>* test;
+
+-(NSUInteger) countOfTransactions;
+-(id)objectInTransactionsAtIndex:(NSUInteger)index;
+-(void)getTransactions:(Transaction **)buffer range:(NSRange)inRange;
+
+-(void)insertObject:(NSString *)object inTestAtIndex:(NSUInteger)index;
+-(void)removeObjectFromTestAtIndex:(NSUInteger)index;
+-(void)replaceObjectInTestAtIndex:(NSUInteger)index withObject:(id)object;
 
 @end
 
