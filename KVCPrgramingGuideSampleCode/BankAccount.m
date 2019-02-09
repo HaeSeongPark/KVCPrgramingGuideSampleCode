@@ -41,6 +41,31 @@
     [self.test replaceObjectAtIndex:index withObject:object];
 }
 
+-(BOOL)validateCurrentBalance:(id *)ioValue error:(out NSError * _Nullable __autoreleasing *)outError {
+    NSLog(@"validateCurrentBalance invoked");
+    if((ioValue == nil) || ([(NSNumber*)*ioValue intValue] < 0)) {
+        if ( outError != NULL ) {
+            *outError = [NSError errorWithDomain:(@"validateCurrentBalance") code:-1 userInfo:@{ NSLocalizedDescriptionKey: @"currentBalance never minus" }];
+            return NO;
+        }
+    }
+    return YES;
+
+}
+
+-(BOOL)validateNumber:(id *)ioValue error:(out NSError * _Nullable __autoreleasing *)outError {
+    if ( ioValue == nil){
+        // valie is nil: might handle in setNilValueForKey
+        // [self setNilValueForKey:"number"];
+        *ioValue = @(0);
+    } else if ([*ioValue intValue] < 0 ){
+        *outError = [NSError errorWithDomain:(@"validateNumber") code:-2 userInfo:@{ NSLocalizedDescriptionKey: @"number never minus" }];
+        return NO;
+    }
+    return YES;
+}
+
+
 - (void)setNilValueForKey:(NSString *)key {
     if ( [key isEqualToString:@"number"]) {
         self.number = 0;

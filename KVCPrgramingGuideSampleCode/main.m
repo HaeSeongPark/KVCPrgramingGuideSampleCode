@@ -273,6 +273,12 @@ int main(int argc, const char * argv[]) {
               [bankAccount valueForKey:@"test null object"], // <null> is an [NSNUll null] object
               [bankAccount valueForKey:@"test nil"]); // (null) nil is real live value that we got back because "test nil" was not in dic
         
+        // Notice that test nil key is not in stuff dic
+        /*
+         "test null object" = "<null>";
+         test1 = test1;
+         */
+        
         NSLog(@"%@", bankAccount.stuff);
         
         
@@ -302,20 +308,22 @@ int main(int argc, const char * argv[]) {
         NSLog(@"%@", bankAccount.currentBalance);
         NSNumber *num = [NSNumber numberWithInt:100];
         NSError *error;
-        if ( [bankAccount validateValue:&num forKey:@"currentBalance" error:&error]) {
+        
+//        NSNull *n = [NSNull nil];
+        if ( [bankAccount validateCurrentBalance:nil error:&error]) {
             [bankAccount setValue:num forKey:@"currentBalance"];
         } else {
             NSLog(@"%@", error);
         }
         NSLog(@"%@", bankAccount.currentBalance);
-
-//
         
-        // Notice that test nil key is not in stuff dic
-        /*
-         "test null object" = "<null>";
-         test1 = test1;
-         */
+        // for scalar property
+        num = [NSNumber numberWithInt:-1];
+        if ( [bankAccount validateNumber:&num error:&error]) {
+            NSLog(@"scalar yes");
+        } else {
+            NSLog(@"scalar no");
+        }
         
         
 //        NSMutableArray<NSNumber *> *arrayz = [@[] mutableCopy];

@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
 -(void)insertObject:(NSString *)object inTestAtIndex:(NSUInteger)index;
 -(void)removeObjectFromTestAtIndex:(NSUInteger)index;
 -(void)replaceObjectInTestAtIndex:(NSUInteger)index withObject:(id)object;
+-(BOOL)validateCurrentBalance:(id *)ioValue error:(out NSError * _Nullable __autoreleasing *)outError;
+-(BOOL)validateNumber:(id*)ioValue error:(out NSError * _Nullable __autoreleasing *)outError;
 
 @end
 
